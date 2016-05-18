@@ -102,6 +102,7 @@ public class GameScreen extends Screen {
         naki = new Naki(world, 250f, 250f);
 
 
+
        /* mouse().setListener(new Mouse.Adapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
