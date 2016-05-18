@@ -36,7 +36,7 @@ public class Naki {
                 sprite.layer().setTranslation(x_px, y_px + 13f);
 
                 body = initPhysicsBody(world,
-                        GameScreen.M_PER_PIXEL * x_px,
+                        GameScreen.M_PER_PIXEL * x_px - 5,
                         GameScreen.M_PER_PIXEL * y_px);
                 hasLoaded = true;
             }
@@ -64,7 +64,7 @@ public class Naki {
         GameScreen.k++;
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(65 * GameScreen.M_PER_PIXEL / 2, sprite.layer().height()* GameScreen.M_PER_PIXEL / 2);
+        shape.setAsBox(sprite.layer().width() * GameScreen.M_PER_PIXEL / 2, sprite.layer().height()* GameScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.4f;
@@ -100,19 +100,19 @@ public class Naki {
             public void onKeyDown(Keyboard.Event event) {
                 if (event.key() == Key.LEFT) {
                     state = State.WALKL;
-                    body.applyForce(new Vec2(-100f,0f), body.getPosition());
+                    body.applyForce(new Vec2(-150f,0f), body.getPosition());
                     checklr = true;
                 }else if (event.key() == Key.RIGHT) {
                     state = State.WALKR;
-                    body.applyForce(new Vec2(100f,0f), body.getPosition());
+                    body.applyForce(new Vec2(150,0f), body.getPosition());
                     checklr = false;
                 }else if (event.key() == Key.UP) {
                     if(checklr == true){
                         state = State.JUMPL;
-                        body.applyForce(new Vec2(-10f, -800f), body.getPosition());
+                        body.applyForce(new Vec2(-50f, -800f), body.getPosition());
                     }else if(checklr == false){
                         state = State.JUMPR;
-                        body.applyForce(new Vec2(-10f, -800f), body.getPosition());
+                        body.applyForce(new Vec2(50f, -800f), body.getPosition());
                     }
                 }else if (event.key() == Key.A) {
                     if(checklr == true){
@@ -134,9 +134,10 @@ public class Naki {
                 case WALKR: offset = 14; break;
                 case JUMPL: offset = 18; break;
                 case JUMPR: offset = 19; break;
-                case ATTKL: offset = 20; break;
-                case ATTKR: offset = 23; break;
+                case ATTKL: offset = 20;break;
+                case ATTKR: offset = 22;break;
             }
+
             if(state == State.IDLEL || state == State.IDLER){
                 spriteIndex = offset + ((spriteIndex + 1) % 5);
                 sprite.setSprite(spriteIndex);
@@ -150,9 +151,16 @@ public class Naki {
                 sprite.setSprite(spriteIndex);
                 e = 0;
             }else if(state == State.ATTKL || state == State.ATTKR){
-                spriteIndex = offset + ((spriteIndex + 1) % 3);
+                spriteIndex = offset + ((spriteIndex + 1) % 2);
                 sprite.setSprite(spriteIndex);
                 e = 0;
+            }else{
+                sprite.setSprite(spriteIndex);
+                e = 0;
+            }if(spriteIndex == 20){
+                state = State.IDLEL;
+            }else if(spriteIndex == 22){
+                state = State.IDLER;
             }
             /*spriteIndex = offset + ((spriteIndex + 1) % 5);
             sprite.setSprite(spriteIndex);
