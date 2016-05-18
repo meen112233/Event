@@ -15,7 +15,7 @@ public class Naki {
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    private boolean checklr;
+    protected boolean checklr;
 
     public enum State {
         IDLEL, IDLER, WALKL, WALKR, JUMPL, JUMPR, ATTKL, ATTKR
@@ -81,21 +81,6 @@ public class Naki {
     public  void update(int delta) {
         if (hasLoaded == false) return;
         PlayN.keyboard().setListener(new Keyboard.Adapter(){
-            @Override
-            public void onKeyUp(Keyboard.Event event) {
-                if(event.key() == Key.SPACE) {
-                    switch (state) {
-                        case IDLEL: state = State.IDLER; break;
-                        case IDLER: state = State.WALKL; break;
-                        case WALKL: state = State.WALKR; break;
-                        case WALKR: state = State.JUMPL; break;
-                        case JUMPL: state = State.JUMPR; break;
-                        case JUMPR: state = State.ATTKL; break;
-                        case ATTKL: state = State.ATTKR; break;
-                    }
-                }
-            }
-
             @Override
             public void onKeyDown(Keyboard.Event event) {
                 if (event.key() == Key.LEFT) {
@@ -166,7 +151,6 @@ public class Naki {
             sprite.setSprite(spriteIndex);
             e = 0;*/
         }
-
     }
 
     public void paint(Clock clock) {
@@ -175,5 +159,8 @@ public class Naki {
         sprite.layer().setTranslation(
                 (body.getPosition().x / GameScreen.M_PER_PIXEL) - 10,
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
+    }
+    public boolean getchecklr(){
+        return checklr;
     }
 }
