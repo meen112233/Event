@@ -33,7 +33,7 @@ public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
-    private final ImageLayer coin;
+    //private final ImageLayer coin;
     private Naki naki;
     private List<Naki> nakiMap;
     private int i = -1;
@@ -50,9 +50,9 @@ public class GameScreen extends Screen {
         Image bgImage = assets().getImage("images/gameScreen.png");
         this.bg = graphics().createImageLayer(bgImage);
 
-        Image coinImage = assets().getImage("images/Coin.png");
+        /*Image coinImage = assets().getImage("images/Coin.png");
         this.coin = graphics().createImageLayer(coinImage);
-        coin.setTranslation(295,215);
+        coin.setTranslation(295,215);*/
 
 
         Image backImage = assets().getImage("images/backButton.png");
@@ -99,7 +99,10 @@ public class GameScreen extends Screen {
             }
         });
 
-        mouse().setListener(new Mouse.Adapter(){
+        naki = new Naki(world, 250f, 250f);
+
+
+       /* mouse().setListener(new Mouse.Adapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
                 nakiMap.add(new Naki(world, (float)event.x(), (float)event.y()));
@@ -109,7 +112,7 @@ public class GameScreen extends Screen {
                 }
 
             }
-        });
+        });*/
 
     }
 
@@ -118,7 +121,8 @@ public class GameScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(backButton);
-        this.layer.add(coin);
+        this.layer.add(naki.layer());
+        //this.layer.add(coin);
 
         if (showDebugDraw) {
             CanvasImage image = graphics().createImage(
@@ -143,11 +147,11 @@ public class GameScreen extends Screen {
         groundShape.set(new Vec2(0, 17), new Vec2(width, 17));
         ground.createFixture(groundShape, 0.0f);
 
-        Body coinCircle = world.createBody(new BodyDef());
+        /*Body coinCircle = world.createBody(new BodyDef());
         CircleShape coinCircleShape = new CircleShape();
         coinCircleShape.setRadius(1.0f);
         coinCircleShape.m_p.set(12f,9f);
-        coinCircle.createFixture(coinCircleShape, 0.0f);
+        coinCircle.createFixture(coinCircleShape, 0.0f);*/
 
     }
 
@@ -157,7 +161,7 @@ public class GameScreen extends Screen {
         for (int c = 0 ; c <= i ; c++){
             nakiMap.get(c).update(delta);
         }
-
+        naki.update(delta);
         world.step(0.033f, 10, 10);
     }
 
@@ -167,6 +171,7 @@ public class GameScreen extends Screen {
         for (int c = 0 ; c <= i ; c++){
             nakiMap.get(c).paint(clock);
         }
+        naki.paint(clock);
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
             debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
