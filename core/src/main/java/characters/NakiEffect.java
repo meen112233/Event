@@ -16,6 +16,8 @@ public class NakiEffect extends Naki{
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
+    private boolean check;
+    public static Naki x;
 
     public enum State {
         EFFECTL, EFFECTR
@@ -27,7 +29,7 @@ public class NakiEffect extends Naki{
     private  int offset = 0;
 
     public NakiEffect(final World world, final float x_px, final float y_px) {
-        super(world, x_px, y_px);
+        super();
         sprite = SpriteLoader.getSprite("images/nakieffect.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -35,6 +37,11 @@ public class NakiEffect extends Naki{
                 sprite.setSprite(spriteIndex);
                 sprite.layer().setOrigin(sprite.width() / 2f, sprite.height() / 2f);
                 sprite.layer().setTranslation(x_px, y_px + 13f);
+
+                body = initPhysicsBody(world,
+                        GameScreen.M_PER_PIXEL * x_px - 5,
+                        GameScreen.M_PER_PIXEL * y_px);
+                hasLoaded = true;
             }
 
             @Override

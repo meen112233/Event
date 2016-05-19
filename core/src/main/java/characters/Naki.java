@@ -15,7 +15,8 @@ public class Naki {
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    protected boolean checklr;
+    public static boolean checklr;
+    public static GameScreen game;
 
     public enum State {
         IDLEL, IDLER, WALKL, WALKR, JUMPL, JUMPR, ATTKL, ATTKR
@@ -25,6 +26,8 @@ public class Naki {
 
     private  int e = 0;
     private  int offset = 0;
+
+    public Naki(){}
 
     public Naki(final World world, final float x_px, final float y_px) {
         sprite = SpriteLoader.getSprite("images/naki.json");
@@ -47,7 +50,6 @@ public class Naki {
             }
         });
 
-
     }
 
     public Layer layer() {
@@ -69,7 +71,7 @@ public class Naki {
         fixtureDef.shape = shape;
         fixtureDef.density = 0.4f;
         fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.5f;
+        fixtureDef.restitution = 0.2f;
         body.createFixture(fixtureDef);
 
         body.setLinearDamping(0.2f);
