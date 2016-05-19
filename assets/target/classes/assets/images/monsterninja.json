@@ -1,0 +1,8 @@
+{
+  "urls": ["images/monsterninja.png"],
+  "sprites":[
+    {"id": "attk_1", "url": 0, "x": 0,   "y": 0, "w": 65, "h": 75},
+    {"id": "attk_2", "url": 0, "x": 65,  "y": 0, "w": 65, "h": 75},
+    {"id": "attk_3", "url": 0, "x": 130, "y": 0, "w": 65, "h": 75}
+  ]
+}

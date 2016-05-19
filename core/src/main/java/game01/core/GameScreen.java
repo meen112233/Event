@@ -2,7 +2,9 @@ package game01.core;
 
 import static playn.core.PlayN.*;
 
+import characters.MonsterNinja;
 import characters.Naki;
+import characters.NakiEffect;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
@@ -35,7 +37,9 @@ public class GameScreen extends Screen {
     private final ImageLayer backButton;
     //private final ImageLayer coin;
     private Naki naki;
-    private List<Naki> nakiMap;
+    private NakiEffect nakiEffect;
+    private MonsterNinja monsterNinja;
+    private List<Naki> nakiEffectMap;
     private int i = -1;
     public static HashMap<Body,String> bodies = new HashMap<Body, String>();
     public static int k = 0;
@@ -46,7 +50,7 @@ public class GameScreen extends Screen {
     public GameScreen(final ScreenStack ss) {
         this.ss = ss;
         graphics().rootLayer().clear();
-        nakiMap = new ArrayList<Naki>();
+        nakiEffectMap = new ArrayList<Naki>();
         Image bgImage = assets().getImage("images/gameScreen.png");
         this.bg = graphics().createImageLayer(bgImage);
 
@@ -100,7 +104,8 @@ public class GameScreen extends Screen {
         });
 
         naki = new Naki(world, 250f, 250f);
-
+        monsterNinja = new MonsterNinja(world, 500f, 200f);
+        //nakiEffect = new NakiEffect(world, 200f, 200f);
 
 
        /* mouse().setListener(new Mouse.Adapter(){
@@ -123,6 +128,8 @@ public class GameScreen extends Screen {
         this.layer.add(bg);
         this.layer.add(backButton);
         this.layer.add(naki.layer());
+        this.layer.add(monsterNinja.layer());
+        //this.layer.add(nakiEffect.layer());
         //this.layer.add(coin);
 
         if (showDebugDraw) {
@@ -148,6 +155,19 @@ public class GameScreen extends Screen {
         groundShape.set(new Vec2(0, 17), new Vec2(width, 17));
         ground.createFixture(groundShape, 0.0f);
 
+        EdgeShape topShape = new EdgeShape();
+        topShape.set(new Vec2(0, 0), new Vec2(24, 0));
+        ground.createFixture(topShape, 0.0f);
+
+        EdgeShape leftShape = new EdgeShape();
+        leftShape.set(new Vec2(0, 0), new Vec2(0, 18));
+        ground.createFixture(leftShape, 0.0f);
+
+        EdgeShape rightShape = new EdgeShape();
+        rightShape.set(new Vec2(24, 0), new Vec2(24, 18));
+        ground.createFixture(rightShape, 0.0f);
+
+
         /*Body coinCircle = world.createBody(new BodyDef());
         CircleShape coinCircleShape = new CircleShape();
         coinCircleShape.setRadius(1.0f);
@@ -160,9 +180,11 @@ public class GameScreen extends Screen {
     public void update(int delta) {
         super.update(delta);
         for (int c = 0 ; c <= i ; c++){
-            nakiMap.get(c).update(delta);
+            nakiEffectMap.get(c).update(delta);
         }
         naki.update(delta);
+        monsterNinja.update(delta);
+        //nakiEffect.update(delta);
         world.step(0.033f, 10, 10);
     }
 
@@ -170,9 +192,11 @@ public class GameScreen extends Screen {
     public void paint(Clock clock) {
         super.paint(clock);
         for (int c = 0 ; c <= i ; c++){
-            nakiMap.get(c).paint(clock);
+            nakiEffectMap.get(c).paint(clock);
         }
         naki.paint(clock);
+        monsterNinja.paint(clock);
+        //nakiEffect.paint(clock);
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
             debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
