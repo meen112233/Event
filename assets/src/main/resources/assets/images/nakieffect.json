@@ -1,14 +1,9 @@
 {
-  "urls": ["images/nakieffect.png"],
+  "urls": ["images/effect.png"],
   "sprites":[
-    {"id": "effectL_1", "url": 0, "x": 0,   "y": 0, "w": 75, "h": 45},
-    {"id": "effectL_2", "url": 0, "x": 75,  "y": 0, "w": 75, "h": 45},
-    {"id": "effectL_3", "url": 0, "x": 150, "y": 0, "w": 75, "h": 45},
-    {"id": "effectL_4", "url": 0, "x": 225, "y": 0, "w": 75, "h": 45},
-
-    {"id": "effectR_1", "url": 0, "x": 0,   "y": 45, "w": 75, "h": 45},
-    {"id": "effectR_2", "url": 0, "x": 75,  "y": 45, "w": 75, "h": 45},
-    {"id": "effectR_3", "url": 0, "x": 150, "y": 45, "w": 75, "h": 45},
-    {"id": "effectR_4", "url": 0, "x": 225, "y": 45, "w": 75, "h": 45}
+    {"id": "effect_1", "url": 0, "x": 0,   "y": 0, "w": 30, "h": 25},
+    {"id": "effect_2", "url": 0, "x": 30,  "y": 0, "w": 30, "h": 25},
+    {"id": "effect_3", "url": 0, "x": 60,  "y": 0, "w": 30, "h": 25},
+    {"id": "effect_4", "url": 0, "x": 90,  "y": 0, "w": 30, "h": 25}
   ]
 }

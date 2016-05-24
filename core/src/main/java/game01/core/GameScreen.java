@@ -35,29 +35,34 @@ public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
+    private final ImageLayer box3;
     //private final ImageLayer coin;
     private Naki naki;
     private NakiEffect nakiEffect;
     private MonsterNinja monsterNinja;
-    private List<Naki> nakiEffectMap;
+    private List<NakiEffect> nakiEffectMap;
     private int i = -1;
-    public static HashMap<Body,String> bodies = new HashMap<Body, String>();
+    public static HashMap<Object,String> bodies = new HashMap<Object, String>();
     public static int k = 0;
     public static int j = 0;
     public static String debugString = "";
     public static String debugStringCoin = "";
+    private float nakieffect_x = 0;
+    private float nakieffect_y = 0;
 
     public GameScreen(final ScreenStack ss) {
         this.ss = ss;
         graphics().rootLayer().clear();
-        nakiEffectMap = new ArrayList<Naki>();
+        nakiEffectMap = new ArrayList<NakiEffect>();
         Image bgImage = assets().getImage("images/gameScreen.png");
         this.bg = graphics().createImageLayer(bgImage);
 
         /*Image coinImage = assets().getImage("images/Coin.png");
         this.coin = graphics().createImageLayer(coinImage);
         coin.setTranslation(295,215);*/
-
+        Image box3Image = assets().getImage("images/box3.png");
+        this.box3 = graphics().createImageLayer(box3Image);
+        box3.setTranslation(385f, 350f);
 
         Image backImage = assets().getImage("images/backButton.png");
         this.backButton = graphics().createImageLayer(backImage);
@@ -105,7 +110,8 @@ public class GameScreen extends Screen {
 
         naki = new Naki(world, 250f, 250f);
         monsterNinja = new MonsterNinja(world, 500f, 200f);
-        //nakiEffect = new NakiEffect(world, 200f, 200f);
+        nakiEffect = new NakiEffect(world, 200f, 200f);
+
 
 
        /* mouse().setListener(new Mouse.Adapter(){
@@ -123,13 +129,14 @@ public class GameScreen extends Screen {
     }
 
     @Override
-    public  void  wasShown() {
+    public void wasShown() {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(backButton);
         this.layer.add(naki.layer());
         this.layer.add(monsterNinja.layer());
-        //this.layer.add(nakiEffect.layer());
+        this.layer.add(nakiEffect.layer());
+        this.layer.add(box3);
         //this.layer.add(coin);
 
         if (showDebugDraw) {
@@ -167,7 +174,6 @@ public class GameScreen extends Screen {
         rightShape.set(new Vec2(24, 0), new Vec2(24, 18));
         ground.createFixture(rightShape, 0.0f);
 
-
         /*Body coinCircle = world.createBody(new BodyDef());
         CircleShape coinCircleShape = new CircleShape();
         coinCircleShape.setRadius(1.0f);
@@ -179,24 +185,24 @@ public class GameScreen extends Screen {
     @Override
     public void update(int delta) {
         super.update(delta);
-        for (int c = 0 ; c <= i ; c++){
+        /*for (int c = 0 ; c <= i ; c++){
             nakiEffectMap.get(c).update(delta);
-        }
+        }*/
         naki.update(delta);
         monsterNinja.update(delta);
-        //nakiEffect.update(delta);
+        nakiEffect.update(delta);
         world.step(0.033f, 10, 10);
     }
 
     @Override
     public void paint(Clock clock) {
         super.paint(clock);
-        for (int c = 0 ; c <= i ; c++){
+        /*for (int c = 0 ; c <= i ; c++){
             nakiEffectMap.get(c).paint(clock);
-        }
+        }*/
         naki.paint(clock);
         monsterNinja.paint(clock);
-        //nakiEffect.paint(clock);
+        nakiEffect.paint(clock);
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
             debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
