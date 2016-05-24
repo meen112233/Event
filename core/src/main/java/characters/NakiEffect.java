@@ -11,19 +11,17 @@ import sprite.Sprite;
 import sprite.SpriteLoader;
 import game01.core.GameScreen;
 
-public class NakiEffect extends Naki{
+public class NakiEffect{
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    private boolean check;
-    public static Naki x;
 
     public enum State {
-        EFFECTL, EFFECTR
+        EFFECT
     };
 
-    private State state;
+    private State state = State.EFFECT;
 
     private  int e = 0;
     private  int offset = 0;
@@ -79,23 +77,11 @@ public class NakiEffect extends Naki{
     }
 
     public  void update(int delta) {
-        if(getchecklr() == true){
-            state = State.EFFECTL;
-        }else{
-            state = State.EFFECTR;
-        }
         if (hasLoaded == false) return;
         e += delta;
-
-        if(e > 150){
-            switch (state){
-                case EFFECTL: offset = 0; break;
-                case EFFECTR: offset = 4; break;
-            }
-            spriteIndex = offset + ((spriteIndex + 1) % 4);
-            sprite.setSprite(spriteIndex);
-            e = 0;
-        }
+        spriteIndex = offset + ((spriteIndex + 1) % 4);
+        sprite.setSprite(spriteIndex);
+        e = 0;
     }
 
     public void paint(Clock clock) {

@@ -15,8 +15,9 @@ public class Naki {
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    public static boolean checklr;
-    public static GameScreen game;
+    private boolean checklr;
+    public static float naki_x = 50f;
+    public static float naki_y = 50f;
 
     public enum State {
         IDLEL, IDLER, WALKL, WALKR, JUMPL, JUMPR, ATTKL, ATTKR
@@ -26,8 +27,6 @@ public class Naki {
 
     private  int e = 0;
     private  int offset = 0;
-
-    public Naki(){}
 
     public Naki(final World world, final float x_px, final float y_px) {
         sprite = SpriteLoader.getSprite("images/naki.json");
@@ -104,9 +103,13 @@ public class Naki {
                 }else if (event.key() == Key.A) {
                     if(checklr == true){
                         state = State.ATTKL;
+                        naki_x = body.getPosition().x-50;
+                        naki_y = body.getPosition().y;
                         //body.applyForce(new Vec2(-10f, -800f), body.getPosition());
                     }else if(checklr == false){
                         state = State.ATTKR;
+                        naki_x = body.getPosition().x+50;
+                        naki_y = body.getPosition().y;
                         //body.applyForce(new Vec2(-10f, -800f), body.getPosition());
                     }
                 }
