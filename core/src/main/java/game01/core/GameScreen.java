@@ -2,10 +2,7 @@ package game01.core;
 
 import static playn.core.PlayN.*;
 
-import characters.MonsterNinja;
-import characters.Naki;
-import characters.NakiEffect;
-import characters.Warp;
+import characters.*;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
@@ -37,28 +34,38 @@ public class GameScreen extends Screen {
     private World world;
     private DebugDrawBox2D debugDraw;
     private boolean showDebugDraw = true;
-    private final ScreenStack ss;
-    private final ImageLayer bg;
-    private final ImageLayer backButton;
-    private final ImageLayer box1;
-    private final ImageLayer box2;
-    private final ImageLayer box3;
-    private final ImageLayer box3_2;
-    //private final ImageLayer coin;
+    private ScreenStack ss;
+    private ImageLayer bg;
+    private ImageLayer backButton;
+    private ImageLayer box1;
+    private ImageLayer box2;
+    private ImageLayer box3;
+    private ImageLayer box3_2;
+    private ImageLayer myhp2_2;
+    private ImageLayer myhp2_1;
     private Naki naki;
     private NakiEffect nakiEffect;
     private MonsterNinja monsterNinja;
+    private MonsterRat monsterRat;
     private List<NakiEffect> nakiEffectMap;
     private Warp warp;
+    private int shoot = 0;
     private int i = -1;
+    private static List<NakiEffect> effectList;
+    private GroupLayer groupEffect = graphics().createGroupLayer();
+
+    public static String debugString = "";
+    public static String debugStringCoin = "";
     public static HashMap<Object,String> bodies = new HashMap<Object, String>();
     public static int k = 0;
     public static int j = 0;
-    public static String debugString = "";
-    public static String debugStringCoin = "";
-    private float nakieffect_x = 0;
-    private float nakieffect_y = 0;
+    public static int maxhp = 2;
+    public static int myhp = maxhp;
 
+    public void addNakiEffect(NakiEffect effect){
+        effectList.add(effect);
+    }
+    public GameScreen(){}
     public GameScreen(final ScreenStack ss) {
         this.ss = ss;
         graphics().rootLayer().clear();
@@ -85,6 +92,14 @@ public class GameScreen extends Screen {
         this.box1 = graphics().createImageLayer(box1Image);
         box1.setTranslation(520f, 110f);
 
+        Image myhp2_2Image = assets().getImage("images/myhp2_2.png");
+        this.myhp2_2 = graphics().createImageLayer(myhp2_2Image);
+        myhp2_2.setTranslation(20f ,460f);
+
+        Image myhp2_1Image = assets().getImage("images/myhp2_1.png");
+        this.myhp2_1 = graphics().createImageLayer(myhp2_1Image);
+        myhp2_1.setTranslation(20f ,460f);
+
         Image backImage = assets().getImage("images/backButton.png");
         this.backButton = graphics().createImageLayer(backImage);
         backButton.setTranslation(10,10);
@@ -101,16 +116,62 @@ public class GameScreen extends Screen {
         world.setWarmStarting(true);
         world.setAutoClearForces(true);
 
+        naki = new Naki(world, 250f, 400f);
+        //monsterNinja = new MonsterNinja(world, 730f, 330f);
+        //nakiEffect = new NakiEffect(world, 200f, 200f);
+        warp = new Warp(560f, 80f);
+        monsterRat = new MonsterRat(world, 600f, 330f);
+
+        effectList = new ArrayList<NakiEffect>();
+
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                if (bodies.get(a) != null){
-                    j = j + 10;
-                    debugString = bodies.get(a) + " contacted with " + bodies.get(b);
-                    debugStringCoin = "Point : " + j;
-                    b.applyForce(new Vec2(80f, -100f), b.getPosition());
+                for(NakiEffect effect : effectList){
+                    if((contact.getFixtureA().getBody() == effect.getBody() &&
+                            (bodies.get(b) == "ground" || bodies.get(b) == "top"
+                                    || bodies.get(b) == "left" || bodies.get(b) == "right"
+                                    || bodies.get(b) == "box3" || bodies.get(b) == "box3_2"
+                                    || bodies.get(b) == "box2" || bodies.get(b) == "box1"))
+                            || (contact.getFixtureB().getBody() == effect.getBody() &&
+                            (bodies.get(a) == "ground" || bodies.get(a) == "top"
+                                    || bodies.get(a) == "left" || bodies.get(a) == "right"
+                                    || bodies.get(a) == "box3" || bodies.get(a) == "box3_2"
+                                    || bodies.get(a) == "box2" || bodies.get(a) == "box1"))){
+                        effect.layer().setVisible(false);
+                        if(effect.getBody() == a){
+                            a.setActive(false);
+                        }else if(effect.getBody() == b){
+                            b.setActive(false);
+                        }
+                    }/*else if((contact.getFixtureA().getBody() == effect.getBody() &&
+                            bodies.get(b) == "monsterRat") ||
+                            (contact.getFixtureB().getBody() == effect.getBody() &&
+                            bodies.get(a) == "monsterRat")){
+                        effect.layer().setVisible(false);
+                        if(effect.getBody() == a){
+                            a.setActive(false);
+                        }else if(effect.getBody() == b){
+                            b.setActive(false);
+                        }
+                    }*/
+                }
+                if(bodies.get(a) == "naki" && bodies.get(b) == "monsterRat"){
+                    System.out.println("hello");
+                    myhp--;
+                    System.out.println(myhp);
+                    a.applyForce(new Vec2(-100f, -850f), b.getPosition());
+                    System.out.println("a = " + bodies.get(a));
+                    System.out.println("b = " + bodies.get(b));
+                }else if(bodies.get(a) == "monsterRat" && bodies.get(b) == "naki"){
+                    System.out.println("hello");
+                    myhp--;
+                    System.out.println(myhp);
+                    System.out.println("a = " + bodies.get(a));
+                    System.out.println("b = " + bodies.get(b));
+                    b.applyForce(new Vec2(-100f, -850f), b.getPosition());
                 }
             }
 
@@ -129,12 +190,6 @@ public class GameScreen extends Screen {
 
             }
         });
-
-        naki = new Naki(world, 250f, 400f);
-        monsterNinja = new MonsterNinja(world, 730f, 330f);
-        nakiEffect = new NakiEffect(world, 200f, 200f);
-        warp = new Warp(560f, 80f);
-
 
 
        /* mouse().setListener(new Mouse.Adapter(){
@@ -157,15 +212,22 @@ public class GameScreen extends Screen {
         this.layer.add(bg);
         this.layer.add(backButton);
         this.layer.add(naki.layer());
-        this.layer.add(monsterNinja.layer());
-        this.layer.add(nakiEffect.layer());
+        //this.layer.add(monsterNinja.layer());
+        this.layer.add(monsterRat.layer());
+        //this.layer.add(nakiEffect.layer());
         this.layer.add(warp.layer());
+        this.layer.add(groupEffect);
         this.layer.add(box1);
         this.layer.add(box2);
         this.layer.add(box3);
         this.layer.add(box3_2);
-        //this.layer.add(coin);
 
+        //this.layer.add(coin);
+        if(myhp == 2){
+            this.layer.add(myhp2_2);
+        }else if(myhp == 1){
+            this.layer.add(myhp2_1);
+        }
         if (showDebugDraw) {
             CanvasImage image = graphics().createImage(
                     (int) (width / GameScreen.M_PER_PIXEL),
@@ -188,42 +250,55 @@ public class GameScreen extends Screen {
         EdgeShape groundShape = new EdgeShape();
         groundShape.set(new Vec2(0, 17), new Vec2(width, 17));
         ground.createFixture(groundShape, 0.0f);
+        bodies.put(ground,"ground");
 
+        Body top = world.createBody(new BodyDef());
         EdgeShape topShape = new EdgeShape();
         topShape.set(new Vec2(0, 0), new Vec2(24, 0));
-        ground.createFixture(topShape, 0.0f);
+        top.createFixture(topShape, 0.0f);
+        bodies.put(top, "top");
 
+        Body left = world.createBody(new BodyDef());
         EdgeShape leftShape = new EdgeShape();
         leftShape.set(new Vec2(0, 0), new Vec2(0, 18));
-        ground.createFixture(leftShape, 0.0f);
+        left.createFixture(leftShape, 0.0f);
+        bodies.put(left, "left");
 
+        Body right = world.createBody(new BodyDef());
         EdgeShape rightShape = new EdgeShape();
         rightShape.set(new Vec2(24, 0), new Vec2(24, 18));
-        ground.createFixture(rightShape, 0.0f);
+        right.createFixture(rightShape, 0.0f);
+        bodies.put(right, "right");
 
         Body box3Square = world.createBody(new BodyDef());
         PolygonShape box3Shape = new PolygonShape();
         box3Shape.setAsBox(255 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
         box3Square.setTransform(new Vec2(510*M_PER_PIXEL, 360*M_PER_PIXEL), 0f);
         box3Square.createFixture(box3Shape, 0.0f);
+        bodies.put(box3Square, "box3");
 
         Body box3_2Square = world.createBody(new BodyDef());
         PolygonShape box3_2Shape = new PolygonShape();
         box3_2Shape.setAsBox(255 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
         box3_2Square.setTransform(new Vec2(190*M_PER_PIXEL, 260*M_PER_PIXEL), 0f);
         box3_2Square.createFixture(box3_2Shape, 0.0f);
+        bodies.put(box3_2Square, "box3_2");
 
         Body box2Square = world.createBody(new BodyDef());
         PolygonShape box2Shape = new PolygonShape();
         box2Shape.setAsBox(170 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
         box2Square.setTransform(new Vec2(385*M_PER_PIXEL, 150*M_PER_PIXEL), 0f);
         box2Square.createFixture(box2Shape, 0.0f);
+        bodies.put(box2Square, "box2");
 
         Body box1Square = world.createBody(new BodyDef());
         PolygonShape box1Shape = new PolygonShape();
         box1Shape.setAsBox(85 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
         box1Square.setTransform(new Vec2(560*M_PER_PIXEL, 120*M_PER_PIXEL), 0f);
         box1Square.createFixture(box1Shape, 0.0f);
+        bodies.put(box1Square, "box1");
+
+
 
         /*Body coinCircle = world.createBody(new BodyDef());
         CircleShape coinCircleShape = new CircleShape();
@@ -232,7 +307,6 @@ public class GameScreen extends Screen {
         coinCircle.createFixture(coinCircleShape, 0.0f);*/
 
     }
-
     @Override
     public void update(int delta) {
         super.update(delta);
@@ -240,9 +314,16 @@ public class GameScreen extends Screen {
             nakiEffectMap.get(c).update(delta);
         }*/
         naki.update(delta);
-        monsterNinja.update(delta);
-        nakiEffect.update(delta);
+        //monsterNinja.update(delta);
+        monsterRat.update(delta);
+        //nakiEffect.update(delta);
         warp.update(delta);
+        for(NakiEffect effect : effectList){
+            effect.update(delta);
+        }
+        for(NakiEffect effect : effectList){
+            groupEffect.add(effect.layer());
+        }
         world.step(0.033f, 10, 10);
     }
 
@@ -253,9 +334,13 @@ public class GameScreen extends Screen {
             nakiEffectMap.get(c).paint(clock);
         }*/
         naki.paint(clock);
-        monsterNinja.paint(clock);
-        nakiEffect.paint(clock);
+        //monsterNinja.paint(clock);
+        monsterRat.paint(clock);
+        //nakiEffect.paint(clock);
         //warp.paint(clock);
+        for(NakiEffect effect: effectList){
+            effect.paint(clock);
+        }
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
             debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
