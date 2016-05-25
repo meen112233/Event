@@ -74,6 +74,7 @@ public class MonsterNinja {
         return body;
 
     }
+    public Body getBody(){ return this.body; }
     public  void update(int delta) {
         if (hasLoaded == false) return;
         e += delta;

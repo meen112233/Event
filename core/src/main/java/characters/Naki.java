@@ -9,14 +9,19 @@ import playn.core.util.Clock;
 import sprite.Sprite;
 import sprite.SpriteLoader;
 import game01.core.GameScreen;
+import tripleplay.game.Screen;
 
-public class Naki {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Naki extends Screen {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    public static float naki_x = 50f;
-    public static float naki_y = 50f;
+    private World world;
+    private List<NakiEffect> effectList;
+    public static GameScreen game = new GameScreen();
 
     public enum State {
         IDLEL, IDLER, WALKL, WALKR, JUMPL, JUMPR, ATTKL, ATTKR
@@ -28,6 +33,9 @@ public class Naki {
     private  int offset = 0;
 
     public Naki(final World world, final float x_px, final float y_px) {
+        this.world = world;
+        effectList = new ArrayList<NakiEffect>();
+
         sprite = SpriteLoader.getSprite("images/naki.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -60,8 +68,7 @@ public class Naki {
         bodyDef.position = new Vec2(0,0);
         Body body = world.createBody(bodyDef);
 
-        GameScreen.bodies.put(body, "test_" + GameScreen.k);
-        GameScreen.k++;
+        GameScreen.bodies.put(body, "naki");
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(sprite.layer().width() * GameScreen.M_PER_PIXEL / 2, sprite.layer().height()* GameScreen.M_PER_PIXEL / 2);
@@ -75,8 +82,8 @@ public class Naki {
         body.setLinearDamping(0.2f);
         body.setTransform(new Vec2(x,y), 0f);
         return body;
-
     }
+    public Body getBody(){ return this.body; }
 
     public  void update(int delta) {
         if (hasLoaded == false) return;
@@ -92,16 +99,23 @@ public class Naki {
                 }else if(event.key() == Key.UP){
                     if(checklr == true){
                         state = State.JUMPL;
-                        body.applyForce(new Vec2(-50f, -800f), body.getPosition());
+                        body.applyForce(new Vec2(-50f, -850f), body.getPosition());
                     }else if(checklr == false){
                         state = State.JUMPR;
-                        body.applyForce(new Vec2(50f, -800f), body.getPosition());
+                        body.applyForce(new Vec2(50f, -850f), body.getPosition());
                     }
                 }else if (event.key() == Key.A) {
+                    NakiEffect effect_1;
                     if(checklr == true){
                         state = State.ATTKL;
+                        effect_1 = new NakiEffect(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 55,
+                                                         body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                        game.addNakiEffect(effect_1);
                     }else if(checklr == false){
                         state = State.ATTKR;
+                        effect_1 = new NakiEffect(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 55,
+                                                         body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                        game.addNakiEffect(effect_1);
                     }
                 }
             }
