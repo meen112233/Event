@@ -5,20 +5,25 @@ import static playn.core.PlayN.*;
 import characters.MonsterNinja;
 import characters.Naki;
 import characters.NakiEffect;
+import characters.Warp;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
+import playn.core.Color;
 import playn.core.DebugDrawBox2D;
 import org.jbox2d.common.Vec2;
 import playn.core.*;
+import playn.core.Image;
 import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +40,16 @@ public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
+    private final ImageLayer box1;
+    private final ImageLayer box2;
     private final ImageLayer box3;
+    private final ImageLayer box3_2;
     //private final ImageLayer coin;
     private Naki naki;
     private NakiEffect nakiEffect;
     private MonsterNinja monsterNinja;
     private List<NakiEffect> nakiEffectMap;
+    private Warp warp;
     private int i = -1;
     public static HashMap<Object,String> bodies = new HashMap<Object, String>();
     public static int k = 0;
@@ -64,6 +73,18 @@ public class GameScreen extends Screen {
         this.box3 = graphics().createImageLayer(box3Image);
         box3.setTranslation(385f, 350f);
 
+        Image box3_2Image = assets().getImage("images/box3.png");
+        this.box3_2 = graphics().createImageLayer(box3_2Image);
+        box3_2.setTranslation(60f, 250f);
+
+        Image box2Image = assets().getImage("images/box2.png");
+        this.box2 = graphics().createImageLayer(box2Image);
+        box2.setTranslation(300f, 140f);
+
+        Image box1Image = assets().getImage("images/box1.png");
+        this.box1 = graphics().createImageLayer(box1Image);
+        box1.setTranslation(520f, 110f);
+
         Image backImage = assets().getImage("images/backButton.png");
         this.backButton = graphics().createImageLayer(backImage);
         backButton.setTranslation(10,10);
@@ -71,6 +92,7 @@ public class GameScreen extends Screen {
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
                 ss.remove(ss.top());
+                k = 0;
             }
         });
 
@@ -108,9 +130,10 @@ public class GameScreen extends Screen {
             }
         });
 
-        naki = new Naki(world, 250f, 250f);
-        monsterNinja = new MonsterNinja(world, 500f, 200f);
+        naki = new Naki(world, 250f, 400f);
+        monsterNinja = new MonsterNinja(world, 730f, 330f);
         nakiEffect = new NakiEffect(world, 200f, 200f);
+        warp = new Warp(560f, 80f);
 
 
 
@@ -136,7 +159,11 @@ public class GameScreen extends Screen {
         this.layer.add(naki.layer());
         this.layer.add(monsterNinja.layer());
         this.layer.add(nakiEffect.layer());
+        this.layer.add(warp.layer());
+        this.layer.add(box1);
+        this.layer.add(box2);
         this.layer.add(box3);
+        this.layer.add(box3_2);
         //this.layer.add(coin);
 
         if (showDebugDraw) {
@@ -174,6 +201,30 @@ public class GameScreen extends Screen {
         rightShape.set(new Vec2(24, 0), new Vec2(24, 18));
         ground.createFixture(rightShape, 0.0f);
 
+        Body box3Square = world.createBody(new BodyDef());
+        PolygonShape box3Shape = new PolygonShape();
+        box3Shape.setAsBox(255 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
+        box3Square.setTransform(new Vec2(510*M_PER_PIXEL, 360*M_PER_PIXEL), 0f);
+        box3Square.createFixture(box3Shape, 0.0f);
+
+        Body box3_2Square = world.createBody(new BodyDef());
+        PolygonShape box3_2Shape = new PolygonShape();
+        box3_2Shape.setAsBox(255 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
+        box3_2Square.setTransform(new Vec2(190*M_PER_PIXEL, 260*M_PER_PIXEL), 0f);
+        box3_2Square.createFixture(box3_2Shape, 0.0f);
+
+        Body box2Square = world.createBody(new BodyDef());
+        PolygonShape box2Shape = new PolygonShape();
+        box2Shape.setAsBox(170 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
+        box2Square.setTransform(new Vec2(385*M_PER_PIXEL, 150*M_PER_PIXEL), 0f);
+        box2Square.createFixture(box2Shape, 0.0f);
+
+        Body box1Square = world.createBody(new BodyDef());
+        PolygonShape box1Shape = new PolygonShape();
+        box1Shape.setAsBox(85 * M_PER_PIXEL / 2,20 * M_PER_PIXEL / 2);
+        box1Square.setTransform(new Vec2(560*M_PER_PIXEL, 120*M_PER_PIXEL), 0f);
+        box1Square.createFixture(box1Shape, 0.0f);
+
         /*Body coinCircle = world.createBody(new BodyDef());
         CircleShape coinCircleShape = new CircleShape();
         coinCircleShape.setRadius(1.0f);
@@ -191,6 +242,7 @@ public class GameScreen extends Screen {
         naki.update(delta);
         monsterNinja.update(delta);
         nakiEffect.update(delta);
+        warp.update(delta);
         world.step(0.033f, 10, 10);
     }
 
@@ -203,6 +255,7 @@ public class GameScreen extends Screen {
         naki.paint(clock);
         monsterNinja.paint(clock);
         nakiEffect.paint(clock);
+        //warp.paint(clock);
         if (showDebugDraw) {
             debugDraw.getCanvas().clear();
             debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
