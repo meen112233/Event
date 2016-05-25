@@ -15,7 +15,6 @@ public class Naki {
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    private boolean checklr;
     public static float naki_x = 50f;
     public static float naki_y = 50f;
 
@@ -85,14 +84,12 @@ public class Naki {
             @Override
             public void onKeyDown(Keyboard.Event event) {
                 if (event.key() == Key.LEFT) {
-                    state = State.WALKL;
-                    body.applyForce(new Vec2(-150f,0f), body.getPosition());
                     checklr = true;
+                    state = State.WALKL;
                 }else if (event.key() == Key.RIGHT) {
-                    state = State.WALKR;
-                    body.applyForce(new Vec2(150,0f), body.getPosition());
                     checklr = false;
-                }else if (event.key() == Key.UP) {
+                    state = State.WALKR;
+                }else if(event.key() == Key.UP){
                     if(checklr == true){
                         state = State.JUMPL;
                         body.applyForce(new Vec2(-50f, -800f), body.getPosition());
@@ -103,14 +100,31 @@ public class Naki {
                 }else if (event.key() == Key.A) {
                     if(checklr == true){
                         state = State.ATTKL;
-                        naki_x = body.getPosition().x-50;
-                        naki_y = body.getPosition().y;
-                        //body.applyForce(new Vec2(-10f, -800f), body.getPosition());
                     }else if(checklr == false){
                         state = State.ATTKR;
-                        naki_x = body.getPosition().x+50;
-                        naki_y = body.getPosition().y;
-                        //body.applyForce(new Vec2(-10f, -800f), body.getPosition());
+                    }
+                }
+            }
+
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.LEFT){
+                    checklr = true;
+                    state = State.IDLEL;
+                }else if(event.key() == Key.RIGHT){
+                    checklr = false;
+                    state = State.IDLER;
+                }else if(event.key() == Key.UP){
+                    if(checklr == true){
+                        state = State.IDLEL;
+                    }else if(checklr == false){
+                        state = State.IDLER;
+                    }
+                }else if(event.key() == Key.A){
+                    if(checklr == true){
+                        state = State.IDLEL;
+                    }else if(checklr == false){
+                        state = State.IDLER;
                     }
                 }
             }
@@ -164,8 +178,25 @@ public class Naki {
         sprite.layer().setTranslation(
                 (body.getPosition().x / GameScreen.M_PER_PIXEL) - 10,
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
+
+        switch (state){
+            case WALKL:
+                checklr = true;
+                Walk(checklr);
+                break;
+            case WALKR:
+                checklr = false;
+                Walk(checklr);
+                break;
+        }
     }
-    public boolean getchecklr(){
-        return checklr;
+
+    private boolean checklr = false;
+    private void Walk(boolean checklr){
+        if(checklr == true){
+            body.applyForce(new Vec2(-10f, 0f), body.getPosition());
+        }else{
+            body.applyForce(new Vec2(10f, 0f), body.getPosition());
+        }
     }
 }
