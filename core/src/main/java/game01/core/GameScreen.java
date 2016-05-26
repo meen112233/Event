@@ -34,6 +34,7 @@ public class GameScreen extends Screen {
     private World world;
     private DebugDrawBox2D debugDraw;
     private boolean showDebugDraw = true;
+    private boolean pause = false;
     private ScreenStack ss;
     private ImageLayer bg;
     private ImageLayer backButton;
@@ -41,8 +42,10 @@ public class GameScreen extends Screen {
     private ImageLayer box2;
     private ImageLayer box3;
     private ImageLayer box3_2;
+    private ImageLayer gameover;
     private ImageLayer myhp2_2;
     private ImageLayer myhp2_1;
+    private ImageLayer myhp2_0;
     private Naki naki;
     private NakiEffect nakiEffect;
     private MonsterNinja monsterNinja;
@@ -92,6 +95,10 @@ public class GameScreen extends Screen {
         this.box1 = graphics().createImageLayer(box1Image);
         box1.setTranslation(520f, 110f);
 
+        Image gameoverImage = assets().getImage("images/gameover.png");
+        this.gameover = graphics().createImageLayer(gameoverImage);
+        gameover.setTranslation(0f,0f);
+
         Image myhp2_2Image = assets().getImage("images/myhp2_2.png");
         this.myhp2_2 = graphics().createImageLayer(myhp2_2Image);
         myhp2_2.setTranslation(20f ,460f);
@@ -99,6 +106,10 @@ public class GameScreen extends Screen {
         Image myhp2_1Image = assets().getImage("images/myhp2_1.png");
         this.myhp2_1 = graphics().createImageLayer(myhp2_1Image);
         myhp2_1.setTranslation(20f ,460f);
+
+        Image myhp2_0Image = assets().getImage("images/myhp2_0.png");
+        this.myhp2_0 = graphics().createImageLayer(myhp2_0Image);
+        myhp2_0.setTranslation(20f, 460f);
 
         Image backImage = assets().getImage("images/backButton.png");
         this.backButton = graphics().createImageLayer(backImage);
@@ -159,19 +170,22 @@ public class GameScreen extends Screen {
                     }*/
                 }
                 if(bodies.get(a) == "naki" && bodies.get(b) == "monsterRat"){
-                    System.out.println("hello");
                     myhp--;
                     System.out.println(myhp);
                     a.applyForce(new Vec2(-100f, -850f), b.getPosition());
+                    b.applyForce(new Vec2(100f, -100f), b.getPosition());
                     System.out.println("a = " + bodies.get(a));
                     System.out.println("b = " + bodies.get(b));
                 }else if(bodies.get(a) == "monsterRat" && bodies.get(b) == "naki"){
-                    System.out.println("hello");
                     myhp--;
                     System.out.println(myhp);
                     System.out.println("a = " + bodies.get(a));
                     System.out.println("b = " + bodies.get(b));
+                    a.applyForce(new Vec2(100f, -100f), b.getPosition());
                     b.applyForce(new Vec2(-100f, -850f), b.getPosition());
+                }
+                if(myhp == 0){
+                    pause = true;
                 }
             }
 
@@ -223,11 +237,7 @@ public class GameScreen extends Screen {
         this.layer.add(box3_2);
 
         //this.layer.add(coin);
-        if(myhp == 2){
-            this.layer.add(myhp2_2);
-        }else if(myhp == 1){
-            this.layer.add(myhp2_1);
-        }
+
         if (showDebugDraw) {
             CanvasImage image = graphics().createImage(
                     (int) (width / GameScreen.M_PER_PIXEL),
@@ -309,44 +319,59 @@ public class GameScreen extends Screen {
     }
     @Override
     public void update(int delta) {
-        super.update(delta);
+        if(pause == true){
+            this.layer.add(gameover);
+            if(maxhp == 2){
+                this.layer.add(myhp2_0);
+            }
+        }
+        if(pause == false) {
+            super.update(delta);
+            if (myhp == 2) {
+                this.layer.add(myhp2_2);
+            } else if (myhp == 1) {
+                this.layer.add(myhp2_1);
+            }
         /*for (int c = 0 ; c <= i ; c++){
             nakiEffectMap.get(c).update(delta);
         }*/
-        naki.update(delta);
-        //monsterNinja.update(delta);
-        monsterRat.update(delta);
-        //nakiEffect.update(delta);
-        warp.update(delta);
-        for(NakiEffect effect : effectList){
-            effect.update(delta);
+            naki.update(delta);
+            //monsterNinja.update(delta);
+            monsterRat.update(delta);
+            //nakiEffect.update(delta);
+            warp.update(delta);
+            for (NakiEffect effect : effectList) {
+                effect.update(delta);
+            }
+            for (NakiEffect effect : effectList) {
+                groupEffect.add(effect.layer());
+            }
+            world.step(0.033f, 10, 10);
         }
-        for(NakiEffect effect : effectList){
-            groupEffect.add(effect.layer());
-        }
-        world.step(0.033f, 10, 10);
     }
 
     @Override
     public void paint(Clock clock) {
-        super.paint(clock);
+        if(pause == false) {
+            super.paint(clock);
         /*for (int c = 0 ; c <= i ; c++){
             nakiEffectMap.get(c).paint(clock);
         }*/
-        naki.paint(clock);
-        //monsterNinja.paint(clock);
-        monsterRat.paint(clock);
-        //nakiEffect.paint(clock);
-        //warp.paint(clock);
-        for(NakiEffect effect: effectList){
-            effect.paint(clock);
-        }
-        if (showDebugDraw) {
-            debugDraw.getCanvas().clear();
-            debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
-            debugDraw.getCanvas().drawText(debugString,100f,50f);
-            debugDraw.getCanvas().drawText(debugStringCoin,100f,100f);
-            world.drawDebugData();
+            naki.paint(clock);
+            //monsterNinja.paint(clock);
+            monsterRat.paint(clock);
+            //nakiEffect.paint(clock);
+            //warp.paint(clock);
+            for (NakiEffect effect : effectList) {
+                effect.paint(clock);
+            }
+            if (showDebugDraw) {
+                debugDraw.getCanvas().clear();
+                debugDraw.getCanvas().setFillColor(Color.rgb(255, 255, 255));
+                debugDraw.getCanvas().drawText(debugString, 100f, 50f);
+                debugDraw.getCanvas().drawText(debugStringCoin, 100f, 100f);
+                world.drawDebugData();
+            }
         }
     }
 }
