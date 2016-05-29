@@ -24,9 +24,8 @@ public class MonsterRat {
     private World world;
     private List<NakiEffect> effectList;
     public static GameScreen game = new GameScreen();
-    private float movelr;
-    private boolean checkmove;
-
+    public static float movelr;
+    public static boolean checkmove = true;
     public enum State {
         WALKL,WALKR,DIEL,DIER
     };
@@ -76,7 +75,7 @@ public class MonsterRat {
         shape.setAsBox(sprite.layer().width() * GameScreen.M_PER_PIXEL / 2, sprite.layer().height()* GameScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.4f;
+        fixtureDef.density = 0.7f;
         fixtureDef.friction = 0.1f;
         fixtureDef.restitution = 0.2f;
         body.createFixture(fixtureDef);
@@ -90,17 +89,17 @@ public class MonsterRat {
     public  void update(int delta) {
         if (hasLoaded == false) return;
         movelr = body.getPosition().x/GameScreen.M_PER_PIXEL;
-        if(movelr >= 430 && movelr <= 440){
-            checkmove = true;
-        }else if(movelr >= 580 && movelr <= 590){
+        if(movelr >= 440 && movelr <= 450){
             checkmove = false;
+        }else if(movelr >= 580 && movelr <= 640){
+            checkmove = true;
         }
-        if(checkmove == false){
+        if(checkmove == true){
             state = State.WALKL;
             checklr = true;
             Walk(checklr);
             movelr = body.getPosition().x/GameScreen.M_PER_PIXEL;
-        }else if(checkmove == true){
+        }else if(checkmove == false){
             state = State.WALKR;
             checklr = false;
             Walk(checklr);
@@ -138,11 +137,14 @@ public class MonsterRat {
                 body.getPosition().y / GameScreen.M_PER_PIXEL);
     }
     private boolean checklr;
+    public void setCheckmove(Boolean checkmove){
+        this.checkmove = checkmove;
+    }
     public void Walk(Boolean checklr){
         if(checklr == true){
-            body.applyForce(new Vec2(-3f, 0f), body.getPosition());
+            body.applyForce(new Vec2(-8f, 0f), body.getPosition());
         }else{
-            body.applyForce(new Vec2(3f, 0f), body.getPosition());
+            body.applyForce(new Vec2(8f, 0f), body.getPosition());
         }
     }
 }

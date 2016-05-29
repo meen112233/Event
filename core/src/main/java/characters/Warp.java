@@ -34,10 +34,6 @@ public class Warp {
                 sprite.setSprite(spriteIndex);
                 sprite.layer().setOrigin(sprite.width() / 2f, sprite.height() / 2f);
                 sprite.layer().setTranslation(x_px, y_px + 13f);
-
-               /* body = initPhysicsBody(world,
-                        GameScreen.M_PER_PIXEL * x_px - 5,
-                        GameScreen.M_PER_PIXEL * y_px);*/
                 hasLoaded = true;
             }
 
@@ -51,29 +47,6 @@ public class Warp {
         return sprite.layer();
     }
 
-    /*private Body initPhysicsBody(World world, float x, float y) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
-        bodyDef.position = new Vec2(0,0);
-        Body body = world.createBody(bodyDef);
-
-        GameScreen.bodies.put(body, "test_" + GameScreen.k);
-        GameScreen.k++;
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.layer().width() * GameScreen.M_PER_PIXEL / 2, sprite.layer().height()* GameScreen.M_PER_PIXEL / 2);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 0.4f;
-        fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.5f;
-        body.createFixture(fixtureDef);
-
-        body.setLinearDamping(0.2f);
-        body.setTransform(new Vec2(x,y), 0f);
-        return body;
-
-    }*/
     public  void update(int delta) {
         if (hasLoaded == false) return;
         e += delta;
@@ -84,12 +57,4 @@ public class Warp {
             e = 0;
         }
     }
-
-   /* public void paint(Clock clock) {
-        if (!hasLoaded) return;
-        //sprite.layer().setRotation(body.getAngle());
-        sprite.layer().setTranslation(
-                (body.getPosition().x / GameScreen.M_PER_PIXEL) - 10,
-                body.getPosition().y / GameScreen.M_PER_PIXEL);
-    }*/
 }
