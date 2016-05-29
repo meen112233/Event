@@ -10,13 +10,13 @@ import playn.core.Mouse;
 public class HomeScreen extends Screen {
 
     private ScreenStack ss;
-    private final GameScreen gameScreen;
+    private final LevelSelectScreen levelselectScreen;
     private final ImageLayer homeBg;
     private final ImageLayer startButton;
 
     public HomeScreen(final ScreenStack ss) {
         this.ss = ss;
-        this.gameScreen = new GameScreen(ss);
+        this.levelselectScreen = new LevelSelectScreen(ss);
 
         Image homeBgImage = assets().getImage("images/homeScreen.png");
         this.homeBg = graphics().createImageLayer(homeBgImage);
@@ -24,12 +24,6 @@ public class HomeScreen extends Screen {
         Image startButtonImage = assets().getImage("images/startButton.png");
         this.startButton = graphics().createImageLayer(startButtonImage);
         startButton.setTranslation(240,250);
-        startButton.addListener(new Mouse.LayerAdapter() {
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.push(new GameScreen(ss));
-            }
-        });
     }
 
     @Override
@@ -37,11 +31,17 @@ public class HomeScreen extends Screen {
         super.wasShown();
         this.layer.add(homeBg);
         this.layer.add(startButton);
+        startButton.addListener(new Mouse.LayerAdapter() {
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                ss.push(levelselectScreen);
+            }
+        });
         keyboard().setListener(new Keyboard.Adapter() {
             @Override
             public void onKeyUp(Keyboard.Event event) {
                 if (event.key() == Key.ENTER) {
-                    ss.push(gameScreen);
+                    ss.push(levelselectScreen);
                 }
             }
         });

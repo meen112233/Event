@@ -17,7 +17,7 @@ public class NakiEffect{
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
-    private char direction;
+    private String direction;
 
     public enum State {
         EFFECT
@@ -28,7 +28,7 @@ public class NakiEffect{
     private  int e = 0;
     private  int offset = 0;
 
-    public NakiEffect(final World world, final float x_px, final float y_px, final char direction) {
+    public NakiEffect(final World world, final float x_px, final float y_px, final String direction) {
         this.direction = direction;
         sprite = SpriteLoader.getSprite("images/nakieffect.json");
         sprite.addCallback(new Callback<Sprite>() {
@@ -75,10 +75,10 @@ public class NakiEffect{
         body.setLinearDamping(0.2f);
         body.setTransform(new Vec2(x,y), 0f);
 
-        if(direction == 'R'){
-            body.applyForce(new Vec2(150f, 0f), body.getPosition());
-        }else if(direction == 'L'){
-            body.applyForce(new Vec2(-150f, 0f), body.getPosition());
+        if(direction == "R1"){
+            body.applyForce(new Vec2(100f, -10f), body.getPosition());
+        }else if(direction == "L1"){
+            body.applyForce(new Vec2(-100f, -10f), body.getPosition());
         }
 
         return body;

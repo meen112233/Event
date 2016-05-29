@@ -22,6 +22,9 @@ public class Naki extends Screen {
     private World world;
     private List<NakiEffect> effectList;
     public static GameScreen game = new GameScreen();
+    public static boolean checkjump = true;
+    public static float checkmove;
+    public static float checkmove2;
 
     public enum State {
         IDLEL, IDLER, WALKL, WALKR, JUMPL, JUMPR, ATTKL, ATTKR
@@ -87,6 +90,8 @@ public class Naki extends Screen {
 
     public  void update(int delta) {
         if (hasLoaded == false) return;
+        checkmove = body.getPosition().x/GameScreen.M_PER_PIXEL;
+        checkmove2 = body.getPosition().y/GameScreen.M_PER_PIXEL;
         PlayN.keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyDown(Keyboard.Event event) {
@@ -99,22 +104,26 @@ public class Naki extends Screen {
                 }else if(event.key() == Key.UP){
                     if(checklr == true){
                         state = State.JUMPL;
-                        body.applyForce(new Vec2(-50f, -850f), body.getPosition());
+                        if(checkjump == true) {
+                            body.applyForce(new Vec2(-50f, -850f), body.getPosition());
+                        }
                     }else if(checklr == false){
                         state = State.JUMPR;
-                        body.applyForce(new Vec2(50f, -850f), body.getPosition());
+                        if(checkjump == true) {
+                            body.applyForce(new Vec2(50f, -850f), body.getPosition());
+                        }
                     }
-                }else if (event.key() == Key.A) {
+                }else if (event.key() == Key.SPACE) {
                     NakiEffect effect_1;
-                    if(checklr == true){
+                    if (checklr == true) {
                         state = State.ATTKL;
                         effect_1 = new NakiEffect(world, body.getPosition().x / GameScreen.M_PER_PIXEL - 55,
-                                                         body.getPosition().y / GameScreen.M_PER_PIXEL, 'L');
+                                body.getPosition().y / GameScreen.M_PER_PIXEL, "L1");
                         game.addNakiEffect(effect_1);
-                    }else if(checklr == false){
+                    } else if (checklr == false) {
                         state = State.ATTKR;
                         effect_1 = new NakiEffect(world, body.getPosition().x / GameScreen.M_PER_PIXEL + 55,
-                                                         body.getPosition().y / GameScreen.M_PER_PIXEL, 'R');
+                                body.getPosition().y / GameScreen.M_PER_PIXEL, "R1");
                         game.addNakiEffect(effect_1);
                     }
                 }
@@ -125,16 +134,19 @@ public class Naki extends Screen {
                 if(event.key() == Key.LEFT){
                     checklr = true;
                     state = State.IDLEL;
+                    checkjump = true;
                 }else if(event.key() == Key.RIGHT){
                     checklr = false;
                     state = State.IDLER;
+                    checkjump = true;
                 }else if(event.key() == Key.UP){
+                    checkjump = false;
                     if(checklr == true){
                         state = State.IDLEL;
                     }else if(checklr == false){
                         state = State.IDLER;
                     }
-                }else if(event.key() == Key.A){
+                }else if(event.key() == Key.Z){
                     if(checklr == true){
                         state = State.IDLEL;
                     }else if(checklr == false){
