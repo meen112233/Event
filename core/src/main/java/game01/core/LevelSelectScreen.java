@@ -19,7 +19,7 @@ public class LevelSelectScreen extends Screen{
     public static int maxhp = 2;
     public static int myhp = maxhp;
     public static int mydamage = 1;
-    public static int mygold = 1000;
+    public static int mygold = 0;
     public static int heartupgrade = 1;
     public static int powerupgrade = 1;
 
@@ -54,7 +54,7 @@ public class LevelSelectScreen extends Screen{
             public void onMouseUp(Mouse.ButtonEvent event) {
                 if(gameScreen.clear == true) {
                     ss.remove(ss.top());
-                    ss.push(new GameScreen(ss));
+                    ss.push(new GameScreen2(ss));
                 }
             }
         });
@@ -71,6 +71,7 @@ public class LevelSelectScreen extends Screen{
                 mygold = 0;
                 heartupgrade = 1;
                 powerupgrade = 1;
+                gameScreen.clear = false;
                 ss.remove(ss.top());
                 ss.push(new HomeScreen(ss));
             }

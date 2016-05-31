@@ -52,6 +52,7 @@ public class GameScreen extends Screen {
     private ImageLayer box2;
     private ImageLayer box3;
     private ImageLayer box3_2;
+    private ImageLayer treasurebox;
     private ImageLayer myhp2_2;
     private ImageLayer myhp2_1;
     private ImageLayer myhp2_0;
@@ -85,24 +86,12 @@ public class GameScreen extends Screen {
     private ImageLayer myhp7_5;
     private ImageLayer myhp7_6;
     private ImageLayer myhp7_7;
-    /*private ImageLayer number0;
-    private ImageLayer number1;
-    private ImageLayer number2;
-    private ImageLayer number3;
-    private ImageLayer number4;
-    private ImageLayer number5;
-    private ImageLayer number6;
-    private ImageLayer number7;
-    private ImageLayer number8;
-    private ImageLayer number9;*/
     private ImageLayer coin;
     private Naki naki;
-    private NakiEffect nakiEffect;
-    private MonsterNinja monsterNinja;
     private MonsterRat monsterRat;
     private MonsterRat2 monsterRat2;
-    private List<NakiEffect> nakiEffectMap;
     private Warp warp;
+    private Firewall firewall;
     private GroupLayer groupEffect = graphics().createGroupLayer();
     private Digit1 digit1;
     private Digit2 digit2;
@@ -119,6 +108,7 @@ public class GameScreen extends Screen {
     private LevelSelectScreen lvscreen;
     private int count1 = 0;
     private int count2 = 0;
+    private int count3 = 0;
     private int maxhp = lvscreen.maxhp;
     private int myhp = lvscreen.myhp;
     private int mygold = lvscreen.mygold;
@@ -132,7 +122,7 @@ public class GameScreen extends Screen {
     public static int j = 0;
     public static int hpmonsterRat = 2;
     public static int hpmonsterRat2 = 2;
-    public static boolean clear = false;
+    public static boolean clear = true;
     public static List<NakiEffect> effectList;
     public static int numberdigit1 = 0;
     public static int numberdigit2 = 0;
@@ -140,6 +130,7 @@ public class GameScreen extends Screen {
     public static int numberdigit4 = 0;
     public static int numberdigit5 = 0;
     public static int numberdigit6 = 0;
+    public static int x = 0;
 
     public void addNakiEffect(NakiEffect effect){
         effectList.add(effect);
@@ -148,14 +139,10 @@ public class GameScreen extends Screen {
     public GameScreen(final ScreenStack ss) {
         this.ss = ss;
         graphics().rootLayer().clear();
-        nakiEffectMap = new ArrayList<NakiEffect>();
 
         Image bgImage = assets().getImage("images/gameScreen.png");
         this.bg = graphics().createImageLayer(bgImage);
 
-        /*Image coinImage = assets().getImage("images/Coin.png");
-        this.coin = graphics().createImageLayer(coinImage);
-        coin.setTranslation(295,215);*/
         Image box3Image = assets().getImage("images/box3.png");
         this.box3 = graphics().createImageLayer(box3Image);
         box3.setTranslation(385f, 350f);
@@ -175,6 +162,10 @@ public class GameScreen extends Screen {
         Image box1_2Image = assets().getImage("images/box1.png");
         this.box1_2 = graphics().createImageLayer(box1_2Image);
         box1_2.setTranslation(10f, 200f);
+
+        Image treasureboxImage = assets().getImage("images/treasurebox.png");
+        this.treasurebox = graphics().createImageLayer(treasureboxImage);
+        treasurebox.setTranslation(10f, 155f);
 
         Image myhp2_2Image = assets().getImage("images/myhp2_2.png");
         this.myhp2_2 = graphics().createImageLayer(myhp2_2Image);
@@ -312,39 +303,6 @@ public class GameScreen extends Screen {
         this.coin = graphics().createImageLayer(coinImage);
         coin.setTranslation(615f, 455f);
 
-        /*Image number0Image = assets().getImage("images/n0.png");
-        this.number0 = graphics().createImageLayer(number0Image);
-        //number0.setTranslation(595f, 455f);
-
-        Image number1Image = assets().getImage("images/n1.png");
-        this.number1 = graphics().createImageLayer(number1Image);
-        //number1.setTranslation(580f, 455f);
-
-        Image number2Image = assets().getImage("images/n2.png");
-        this.number2 = graphics().createImageLayer(number2Image);
-        //number2.setTranslation(565f, 455f);
-
-        Image number3Image = assets().getImage("images/n3.png");
-        this.number3 = graphics().createImageLayer(number3Image);
-
-        Image number4Image = assets().getImage("images/n4.png");
-        this.number4 = graphics().createImageLayer(number4Image);
-
-        Image number5Image = assets().getImage("images/n5.png");
-        this.number5 = graphics().createImageLayer(number5Image);
-
-        Image number6Image = assets().getImage("images/n6.png");
-        this.number6 = graphics().createImageLayer(number6Image);
-
-        Image number7Image = assets().getImage("images/n7.png");
-        this.number7 = graphics().createImageLayer(number7Image);
-
-        Image number8Image = assets().getImage("images/n8.png");
-        this.number8 = graphics().createImageLayer(number8Image);
-
-        Image number9Image = assets().getImage("images/n9.png");
-        this.number9 = graphics().createImageLayer(number9Image);*/
-
         Image pauseScreenImage = assets().getImage("images/pausescreen.png");
         this.pauseScreen = graphics().createImageLayer(pauseScreenImage);
         pauseScreen.setOrigin(300f/2f , 350f/2f);
@@ -475,9 +433,8 @@ public class GameScreen extends Screen {
         world.setAutoClearForces(true);
 
         naki = new Naki(world, 180f, 420f);
-        //monsterNinja = new MonsterNinja(world, 730f, 330f);
-        //nakiEffect = new NakiEffect(world, 200f, 200f);
         warp = new Warp(560f, 80f);
+        firewall = new Firewall(world, 390f, 95f);
         monsterRat = new MonsterRat(world, 600f, 330f);
         monsterRat2 = new MonsterRat2(world, 40f, 280f);
         digit1 = new Digit1(595f, 455f);
@@ -561,19 +518,8 @@ public class GameScreen extends Screen {
                             monsterRat2.layer().setVisible(false);
                         }
                     }
-                    //==================================================================================================
-                    /*else if((contact.getFixtureA().getBody() == effect.getBody() &&
-                            bodies.get(b) == "monsterRat") ||
-                            (contact.getFixtureB().getBody() == effect.getBody() &&
-                            bodies.get(a) == "monsterRat")){
-                        effect.layer().setVisible(false);
-                        if(effect.getBody() == a){
-                            a.setActive(false);
-                        }else if(effect.getBody() == b){
-                            b.setActive(false);
-                        }
-                    }*/
                 }
+                //======================================================================================================
                 //==============================โดน monster แล้วเลือดลด===================================================
                 if(bodies.get(a) == "naki" && bodies.get(b) == "monsterRat"){
                     myhp--;
@@ -626,6 +572,24 @@ public class GameScreen extends Screen {
                     Naki.checkjump = true;
                 }
                 //===========================================================================================================
+                //=====================เก็บของ==================================================================================
+                if(bodies.get(a) == "naki" && bodies.get(b) == "treasure"){
+                    mygold += 200;
+                    b.setActive(false);
+                    treasurebox.setVisible(false);
+                }else if(bodies.get(a) == "treasure" && bodies.get(b) == "naki"){
+                    mygold += 200;
+                    a.setActive(false);
+                    treasurebox.setVisible(false);
+                }
+                //==========================================================================================================
+                if(bodies.get(a) == "naki" && bodies.get(b) == "firewall"){
+                    myhp--;
+                    a.applyForce(new Vec2(-300f, -850f), b.getPosition());
+                }else if(bodies.get(a) == "firewall" && bodies.get(b) == "naki"){
+                    myhp--;
+                    b.applyForce(new Vec2(-300f, -850f), b.getPosition());
+                }
                 if(myhp == 0){
                     pause2 = true;
                 }if((Naki.checkmove >= 525 && Naki.checkmove <= 600) && (Naki.checkmove2 >= 70 && Naki.checkmove2 <= 80)){
@@ -649,20 +613,6 @@ public class GameScreen extends Screen {
 
             }
         });
-
-
-       /* mouse().setListener(new Mouse.Adapter(){
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event) {
-                nakiMap.add(new Naki(world, (float)event.x(), (float)event.y()));
-                i++;
-                for (int c = 0 ; c <= i ; c++){
-                    graphics().rootLayer().add(nakiMap.get(c).layer());
-                }
-
-            }
-        });*/
-
     }
 
     @Override
@@ -676,6 +626,7 @@ public class GameScreen extends Screen {
         this.layer.add(monsterRat2.layer());
         //this.layer.add(nakiEffect.layer());
         this.layer.add(warp.layer());
+        this.layer.add(firewall.layer());
         this.layer.add(groupEffect);
         this.layer.add(box1);
         this.layer.add(box1_2);
@@ -683,7 +634,9 @@ public class GameScreen extends Screen {
         this.layer.add(box3);
         this.layer.add(box3_2);
         this.layer.add(coin);
-
+        if(clear == false) {
+            this.layer.add(treasurebox);
+        }
         //this.layer.add(coin);
 
         if (showDebugDraw) {
@@ -709,12 +662,6 @@ public class GameScreen extends Screen {
         groundShape.set(new Vec2(0, 17), new Vec2(width, 17));
         ground.createFixture(groundShape, 0.0f);
         bodies.put(ground,"ground");
-
-        /*Body top = world.createBody(new BodyDef());
-        EdgeShape topShape = new EdgeShape();
-        topShape.set(new Vec2(0, 0), new Vec2(24, 0));
-        top.createFixture(topShape, 0.0f);
-        bodies.put(top, "top");*/
 
         Body left = world.createBody(new BodyDef());
         EdgeShape leftShape = new EdgeShape();
@@ -763,15 +710,16 @@ public class GameScreen extends Screen {
         box1_2Square.createFixture(box1_2Shape, 0.0f);
         bodies.put(box1_2Square, "box1_2");
 
-
-
-        /*Body coinCircle = world.createBody(new BodyDef());
-        CircleShape coinCircleShape = new CircleShape();
-        coinCircleShape.setRadius(1.0f);
-        coinCircleShape.m_p.set(12f,9f);
-        coinCircle.createFixture(coinCircleShape, 0.0f);*/
-
+        if(clear == false) {
+            Body treasureboxSquare = world.createBody(new BodyDef());
+            PolygonShape treasureboxShape = new PolygonShape();
+            treasureboxShape.setAsBox(45 * M_PER_PIXEL / 2, 38 * M_PER_PIXEL / 2);
+            treasureboxSquare.setTransform(new Vec2(34 * M_PER_PIXEL, 174 * M_PER_PIXEL), 0f);
+            treasureboxSquare.createFixture(treasureboxShape, 0.0f);
+            bodies.put(treasureboxSquare, "treasure");
+        }
     }
+
     @Override
     public void update(int delta) {
         if(pause2 == true){
@@ -802,16 +750,26 @@ public class GameScreen extends Screen {
             monsterRat.update(delta);
             monsterRat2.update(delta);
             warp.update(delta);
+            firewall.update(delta);
+            count3++;
+            if(count3 == 50){
+                firewall.layer().setVisible(false);
+                firewall.getBody().setActive(false);
+            }else if(count3 == 120){
+                firewall.layer().setVisible(true);
+                firewall.getBody().setActive(true);
+                count3 = 0;
+            }
             //====================== monster เกิด =======================================================================
             if(hpmonsterRat <= 0) {
                 count1++;
-                if(count1 == 600){
+                if(count1 == 500){
                     setBorn();
                 }
             }
             if(hpmonsterRat2 <= 0) {
                 count2++;
-                if (count2 == 600) {
+                if (count2 == 500) {
                     setBorn();
                 }
             }
@@ -884,10 +842,39 @@ public class GameScreen extends Screen {
                     this.layer.add(myhp7_1);
                 }
             }
+            //====================================== แสดงเงิน ============================================================
             temp = mygold;
             while (temp != 0){
-                showGold(temp % 10);
+                x = temp % 10;
+                if(countdigit == 1){
+                    numberdigit1 = x;
+                    this.layer.add(digit1.layer());
+                    countdigit++;
+                }else if(countdigit == 2){
+                    numberdigit2 = x;
+                    this.layer.add(digit2.layer());
+                    countdigit++;
+                }else if(countdigit == 3){
+                    numberdigit3 = x;
+                    this.layer.add(digit3.layer());
+                    countdigit++;
+                }else if(countdigit == 4){
+                    numberdigit4 = x;
+                    this.layer.add(digit4.layer());
+                    countdigit++;
+                }else if(countdigit == 5){
+                    numberdigit5 = x;
+                    this.layer.add(digit5.layer());
+                    countdigit++;
+                }else if(countdigit == 6){
+                    numberdigit6 = x;
+                    this.layer.add(digit6.layer());
+                    countdigit++;
+                }
                 temp /= 10;
+            }
+            if(temp == 0){
+                countdigit = 1;
             }
             //==========================================================================================================
             for (NakiEffect effect : effectList) {
@@ -908,17 +895,12 @@ public class GameScreen extends Screen {
 
     @Override
     public void paint(Clock clock) {
-        if(pause == false) {
+        if(pause == false ) {
             super.paint(clock);
-        /*for (int c = 0 ; c <= i ; c++){
-            nakiEffectMap.get(c).paint(clock);
-        }*/
             naki.paint(clock);
-            //monsterNinja.paint(clock);
             monsterRat.paint(clock);
             monsterRat2.paint(clock);
-            //nakiEffect.paint(clock);
-            //warp.paint(clock);
+            firewall.paint(clock);
             for (NakiEffect effect : effectList) {
                 effect.paint(clock);
             }
@@ -932,43 +914,16 @@ public class GameScreen extends Screen {
         }
     }
     public void setBorn(){
-        if(count1 == 600) {
+        if(count1 == 500) {
             monsterRat.layer().setVisible(true);
             monsterRat.getBody().setActive(true);
             hpmonsterRat = 2;
             count1 = 0;
-        }else if(count2 == 600){
+        }else if(count2 == 500){
             monsterRat2.layer().setVisible(true);
             monsterRat2.getBody().setActive(true);
             hpmonsterRat2 = 2;
             count2 = 0;
-        }
-    }
-    public void showGold(int x){
-        if(countdigit == 1){
-            numberdigit1 = x;
-            this.layer.add(digit1.layer());
-            countdigit++;
-        }else if(countdigit == 2){
-            numberdigit2 = x;
-            this.layer.add(digit2.layer());
-            countdigit++;
-        }else if(countdigit == 3){
-            numberdigit3 = x;
-            this.layer.add(digit3.layer());
-            countdigit++;
-        }else if(countdigit == 4){
-            numberdigit4 = x;
-            this.layer.add(digit4.layer());
-            countdigit++;
-        }else if(countdigit == 5){
-            numberdigit5 = x;
-            this.layer.add(digit5.layer());
-            countdigit++;
-        }else if(countdigit == 6){
-            numberdigit6 = x;
-            this.layer.add(digit6.layer());
-            countdigit++;
         }
     }
 }

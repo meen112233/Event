@@ -339,7 +339,6 @@ public class UpgradeScreen extends Screen {
     @Override
     public void update(int delta) {
         super.update(delta);
-        System.out.println(gold);
         if(heartupgrade == 1){
             this.layer.add(heart200);
             this.layer.add(heartup0);

@@ -70,5 +70,24 @@ public class Digit4 {
         }else if (GameScreen.numberdigit4 == 9){
             state = State.NUMBER9;
         }
+        e += delta;
+
+        if(e > 150){
+            switch (state) {
+                case NUMBER0: offset = 0; break;
+                case NUMBER1: offset = 1; break;
+                case NUMBER2: offset = 2; break;
+                case NUMBER3: offset = 3; break;
+                case NUMBER4: offset = 4; break;
+                case NUMBER5: offset = 5; break;
+                case NUMBER6: offset = 6;break;
+                case NUMBER7: offset = 7;break;
+                case NUMBER8: offset = 8;break;
+                case NUMBER9: offset = 9;break;
+            }
+            spriteIndex = offset + ((spriteIndex + 1) % 1);
+            sprite.setSprite(spriteIndex);
+            e = 0;
+        }
     }
 }
